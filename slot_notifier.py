@@ -1,4 +1,7 @@
+#!/usr/local/opt/python-3.9.0/bin/python3.9
+
 import time
+import sys
 from datetime import datetime, timedelta
 
 from cowin_api import CoWinAPI
@@ -46,19 +49,24 @@ sender = Emailer()
 cowin = CoWinAPI()
 
 while True:
-    start_dates = [datetime.now() + timedelta(days=i*7) for i in range(WEEKS)]
-    dates = [start_date.strftime('%d-%m-%Y') for start_date in start_dates]
+    try:
+        start_dates = [datetime.now() + timedelta(days=i*7) for i in range(WEEKS)]
+        dates = [start_date.strftime('%d-%m-%Y') for start_date in start_dates]
 
-    for district in DISTRICTS:
-        for date in dates:
-            print("Fetching for date:", date, "district:", district)
-            available_centers = cowin.get_availability_by_district(district, date, AGE_LIMIT)
+        for district in DISTRICTS:
+            for date in dates:
+                print("Fetching for date:", date, "district:", district)
+                available_centers = cowin.get_availability_by_district(district, date, AGE_LIMIT)
 
-            for center in available_centers['centers']:
-                for session in center['sessions']:
-                    if session['available_capacity'] > 0:
-                        content = emailContent.format(center["name"], session["date"], center["pincode"])
-                        sender.sendmail(sendTo, emailSubject.format(center["name"]), content)
-                        print(center["name"], available_centers)
-
+                for center in available_centers['centers']:
+                    for session in center['sessions']:
+                        if session['available_capacity'] > 0:
+                            content = emailContent.format(center["name"], session["date"], center["pincode"])
+                            sender.sendmail(sendTo, emailSubject.format(center["name"]), content)
+                            print(center["name"], available_centers)
+    except(e):
+        print(repr(e))
+        sender.sendmail(sendTo, 'Error in vaccine script', e)
+    sys.stdout.flush()
     time.sleep(POLL_INTERVAL)
+
