@@ -64,9 +64,9 @@ while True:
                             content = emailContent.format(center["name"], session["date"], center["pincode"])
                             sender.sendmail(sendTo, emailSubject.format(center["name"]), content)
                             print(center["name"], available_centers)
-    except(e):
+    except Exception as e:
         print(repr(e))
-        sender.sendmail(sendTo, 'Error in vaccine script', e)
+        sender.sendmail(sendTo, 'Error in vaccine script', repr(e))
     sys.stdout.flush()
     time.sleep(POLL_INTERVAL)
 
