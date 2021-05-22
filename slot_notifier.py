@@ -21,7 +21,7 @@ GMAIL_USERNAME = ''  # change this to match your gmail account
 GMAIL_PASSWORD = ''  # change this to match your gmail password
 sendTo = ''
 emailSubject = "VACCINE SLOT at {}!!!"
-emailContent = "Slot: {}, Date: {}, Pincode: {}"
+emailContent = "Slot: {}, Date: {}, Pincode: {}, Capacity: {}"
 
 class Emailer:
     def sendmail(self, recipient, subject, content):
@@ -60,8 +60,8 @@ while True:
 
                 for center in available_centers['centers']:
                     for session in center['sessions']:
-                        if session['available_capacity'] > 0:
-                            content = emailContent.format(center["name"], session["date"], center["pincode"])
+                        if session['available_capacity_dose1'] > 0:
+                            content = emailContent.format(center["name"], session["date"], center["pincode"], session["available_capacity_dose1"])
                             sender.sendmail(sendTo, emailSubject.format(center["name"]), content)
                             print(center["name"], available_centers)
     except Exception as e:
